@@ -5,5 +5,3 @@ const Titulo = ({ texto }) => {
 };
 
 export default Titulo;
-
-
