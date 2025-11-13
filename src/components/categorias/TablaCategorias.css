@@ -1,0 +1,9 @@
+.custom-table {
+  border: 2px solid #343a40 !important; /* borde más grueso y oscuro */
+}
+
+.custom-table th,
+.custom-table td {
+  border: 1px solid #6c757d !important; /* bordes internos */
+  vertical-align: middle; /* centra el texto verticalmente */
+}
