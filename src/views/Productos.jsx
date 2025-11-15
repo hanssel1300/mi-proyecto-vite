@@ -32,6 +32,7 @@ const Productos = () => {
     precio: null,
     stock: null,
     categoria: "",
+    imagen: "", // campo imagen base64
   });
 
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
@@ -46,7 +47,8 @@ const Productos = () => {
     const { name, value } = e.target;
     setProductoEditado((prev) => ({
       ...prev,
-      [name]: name === "precio" || name === "stock" ? Number(value) || 0 : value,
+      [name]:
+        name === "precio" || name === "stock" ? (value === "" ? null : Number(value)) : value,
     }));
   };
 
@@ -77,6 +79,7 @@ const Productos = () => {
         precio: productoEditado.precio,
         stock: productoEditado.stock,
         categoria: productoEditado.categoria,
+        imagen: productoEditado.imagen || "",
       });
       await cargarProductos();
       console.log("Producto actualizado exitosamente.");
@@ -92,11 +95,11 @@ const Productos = () => {
     const { name, value } = e.target;
     setNuevoProducto((prev) => ({
       ...prev,
-      [name]: name === "precio" || name === "stock" ? Number(value) || 0 : value,
+      [name]: name === "precio" || name === "stock" ? (value === "" ? null : Number(value)) : value,
     }));
   };
 
-  // Función para agregar un nuevo producto
+  // Función para agregar un nuevo producto (incluye imagen)
   const agregarProducto = async () => {
     // Validar campos requeridos
     if (
@@ -113,7 +116,14 @@ const Productos = () => {
     setMostrarModal(false);
     try {
       // Referencia a la colección de productos en Firestore
-      await addDoc(productosCollection, nuevoProducto);
+      await addDoc(productosCollection, {
+        nombre: nuevoProducto.nombre,
+        descripcion: nuevoProducto.descripcion,
+        precio: nuevoProducto.precio,
+        stock: nuevoProducto.stock,
+        categoria: nuevoProducto.categoria,
+        imagen: nuevoProducto.imagen || "",
+      });
       // Limpiar campos del formulario
       setNuevoProducto({
         nombre: "",
@@ -121,6 +131,7 @@ const Productos = () => {
         precio: null,
         stock: null,
         categoria: "",
+        imagen: "",
       });
       await cargarProductos();
       console.log("Producto agregado exitosamente.");
@@ -133,9 +144,9 @@ const Productos = () => {
   const cargarProductos = async () => {
     try {
       const consulta = await getDocs(productosCollection);
-      const datosProductos = consulta.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
+      const datosProductos = consulta.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
       }));
       setProductos(datosProductos);
       setProductosFiltrados(datosProductos);
@@ -148,9 +159,9 @@ const Productos = () => {
   const cargarCategorias = async () => {
     try {
       const consulta = await getDocs(categoriasCollection);
-      const datosCategorias = consulta.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
+      const datosCategorias = consulta.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
       }));
       setCategorias(datosCategorias);
       console.log("Categorías cargadas desde Firestore:", datosCategorias);
@@ -194,11 +205,11 @@ const Productos = () => {
       const nombreCat =
         categorias.find((c) => c.id === producto.categoria)?.nombre || "";
       return (
-        producto.nombre?.toString().toLowerCase().includes(texto) ||
-        producto.descripcion?.toString().toLowerCase().includes(texto) ||
-        nombreCat.toString().toLowerCase().includes(texto) ||
-        producto.precio?.toString().includes(texto) ||
-        producto.stock?.toString().includes(texto)
+        String(producto.nombre || "").toLowerCase().includes(texto) ||
+        String(producto.descripcion || "").toLowerCase().includes(texto) ||
+        String(nombreCat || "").toLowerCase().includes(texto) ||
+        String(producto.precio || "").includes(texto) ||
+        String(producto.stock || "").includes(texto)
       );
     });
     setProductosFiltrados(filtrados);
@@ -235,6 +246,7 @@ const Productos = () => {
         setMostrarModal={setMostrarModal}
         nuevoProducto={nuevoProducto}
         manejoCambioInput={manejoCambioInput}
+        setNuevoProducto={setNuevoProducto} // pasamos setter para manejo imagen
         agregarProducto={agregarProducto}
         categorias={categorias}
       />
@@ -249,6 +261,7 @@ const Productos = () => {
         setMostrarModalEditar={setMostrarModalEditar}
         productoEditado={productoEditado}
         manejoCambioInputEditar={manejoCambioInputEditar}
+        setProductoEditado={setProductoEditado} // pasamos setter para manejo imagen
         editarProducto={editarProducto}
         categorias={categorias}
       />
@@ -257,3 +270,4 @@ const Productos = () => {
 };
 
 export default Productos;
+

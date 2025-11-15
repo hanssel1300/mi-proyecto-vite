@@ -7,9 +7,32 @@ const ModalRegistroProducto = ({
   setMostrarModal,
   nuevoProducto,
   manejoCambioInput,
+  setNuevoProducto,
   agregarProducto,
   categorias,
 }) => {
+  // Función para manejar la selección de imagen y convertir a base64
+  const manejarImagen = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validar tamaño (1MB = 1,048,576 bytes)
+      if (file.size > 1048576) {
+        alert("La imagen no debe exceder 1MB.");
+        e.target.value = null; // Limpiar el input
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // reader.result es la cadena base64
+        setNuevoProducto((prev) => ({
+          ...prev,
+          imagen: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Modal show={mostrarModal} onHide={() => setMostrarModal(false)}>
       <Modal.Header closeButton>
@@ -27,6 +50,7 @@ const ModalRegistroProducto = ({
               placeholder="Ingresa el nombre"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Descripción</Form.Label>
             <Form.Control
@@ -38,6 +62,7 @@ const ModalRegistroProducto = ({
               placeholder="Ingresa la descripción"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Precio</Form.Label>
             <Form.Control
@@ -50,6 +75,7 @@ const ModalRegistroProducto = ({
               step="0.01"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Stock</Form.Label>
             <Form.Control
@@ -61,6 +87,7 @@ const ModalRegistroProducto = ({
               min="0"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Categoría</Form.Label>
             <Form.Select
@@ -75,6 +102,28 @@ const ModalRegistroProducto = ({
                 </option>
               ))}
             </Form.Select>
+          </Form.Group>
+
+          {/* Campo de imagen */}
+          <Form.Group className="mb-3">
+            <Form.Label>Imagen</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={manejarImagen}
+            />
+            {nuevoProducto.imagen && (
+              <img
+                src={nuevoProducto.imagen}
+                alt="Vista previa"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  objectFit: "cover",
+                  marginTop: "10px",
+                }}
+              />
+            )}
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -91,3 +140,4 @@ const ModalRegistroProducto = ({
 };
 
 export default ModalRegistroProducto;
+

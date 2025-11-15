@@ -7,10 +7,33 @@ const ModalEdicionProducto = ({
   setMostrarModalEditar,
   productoEditado,
   manejoCambioInputEditar,
+  setProductoEditado,
   editarProducto,
   categorias,
 }) => {
   if (!productoEditado) return null;
+
+  // Función para manejar la selección de imagen y convertir a base64
+  const manejarImagen = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validar tamaño (1MB = 1,048,576 bytes)
+      if (file.size > 1048576) {
+        alert("La imagen no debe exceder 1MB.");
+        e.target.value = null; // Limpiar el input
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProductoEditado((prev) => ({
+          ...prev,
+          imagen: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Modal show={mostrarModalEditar} onHide={() => setMostrarModalEditar(false)}>
       <Modal.Header closeButton>
@@ -28,6 +51,7 @@ const ModalEdicionProducto = ({
               placeholder="Ingresa el nombre"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Descripción</Form.Label>
             <Form.Control
@@ -39,6 +63,7 @@ const ModalEdicionProducto = ({
               placeholder="Ingresa la descripción"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Precio</Form.Label>
             <Form.Control
@@ -51,6 +76,7 @@ const ModalEdicionProducto = ({
               step="0.01"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Stock</Form.Label>
             <Form.Control
@@ -62,6 +88,7 @@ const ModalEdicionProducto = ({
               min="0"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Categoría</Form.Label>
             <Form.Select
@@ -76,6 +103,24 @@ const ModalEdicionProducto = ({
                 </option>
               ))}
             </Form.Select>
+          </Form.Group>
+
+          {/* Campo de imagen */}
+          <Form.Group className="mb-3">
+            <Form.Label>Imagen</Form.Label>
+            <Form.Control type="file" accept="image/*" onChange={manejarImagen} />
+            {productoEditado.imagen && (
+              <img
+                src={productoEditado.imagen}
+                alt="Vista previa"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  objectFit: "cover",
+                  marginTop: "10px",
+                }}
+              />
+            )}
           </Form.Group>
         </Form>
       </Modal.Body>

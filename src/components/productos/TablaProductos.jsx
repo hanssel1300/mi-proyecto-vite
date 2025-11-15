@@ -7,6 +7,7 @@ const TablaProductos = ({ productos, categorias, manejarEliminar, manejarEditar 
     <Table striped bordered hover responsive>
       <thead>
         <tr>
+          <th>Imagen</th> {/* Nueva columna para la imagen */}
           <th>Nombre</th>
           <th>Descripción</th>
           <th>Precio</th>
@@ -20,6 +21,17 @@ const TablaProductos = ({ productos, categorias, manejarEliminar, manejarEditar 
           const nombreCat = categorias.find((c) => c.id === producto.categoria)?.nombre || "Sin categoría";
           return (
             <tr key={producto.id}>
+              <td>
+                {producto.imagen ? (
+                  <img
+                    src={producto.imagen}
+                    alt={producto.nombre}
+                    style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                  />
+                ) : (
+                  "Sin imagen"
+                )}
+              </td>
               <td>{producto.nombre}</td>
               <td>{producto.descripcion}</td>
               <td>${producto.precio}</td>
@@ -52,3 +64,4 @@ const TablaProductos = ({ productos, categorias, manejarEliminar, manejarEditar 
 };
 
 export default TablaProductos;
+
