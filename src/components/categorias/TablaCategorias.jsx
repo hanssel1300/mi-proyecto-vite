@@ -1,8 +1,15 @@
 import React from "react";
 import { Table, Spinner, Alert, Button } from "react-bootstrap";
-import "./TablaCategorias.css"; // <--- importa el CSS personalizado
+import "./TablaCategorias.css";
 
-const TablaCategorias = ({ categorias, loading, error, onRetry }) => {
+const TablaCategorias = ({
+  categorias,
+  loading,
+  error,
+  onRetry,
+  manejarEliminar,
+  manejarEditar,
+}) => {
   if (loading) {
     return (
       <div className="text-center my-4">
@@ -28,40 +35,44 @@ const TablaCategorias = ({ categorias, loading, error, onRetry }) => {
     );
   }
 
-  if (!categorias || categorias.length === 0) {
-    return <p className="text-center">No hay categorías para mostrar.</p>;
-  }
-
   return (
-    <div className="mt-3">
-      <Table
-        striped
-        bordered
-        hover
-        responsive
-        className="shadow-sm custom-table"  // 👈 clase personalizada
-      >
-        <thead className="table-dark">
-          <tr>
-            <th style={{ width: 60 }}>#</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
+    <Table striped bordered hover responsive>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {categorias.map((categoria) => (
+          <tr key={categoria.id}>
+            <td>{categoria.nombre}</td>
+            <td>{categoria.descripcion}</td>
+            <td>
+              <Button
+                variant="outline-warning"
+                size="sm"
+                className="me-1"
+                onClick={() => manejarEditar(categoria)}
+              >
+                <i className="bi bi-pencil"></i>
+              </Button>
+              <Button
+                variant="outline-danger"
+                size="sm"
+                className="m-1"
+                onClick={() => manejarEliminar(categoria)}
+              >
+                <i className="bi bi-trash"></i>
+              </Button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {categorias.map((categoria, index) => (
-            <tr key={categoria.id}>
-              <td>{index + 1}</td>
-              <td>{categoria.nombre}</td>
-              <td>{categoria.descripcion}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
+        ))}
+      </tbody>
+    </Table>
   );
 };
 
 export default TablaCategorias;
-
 
