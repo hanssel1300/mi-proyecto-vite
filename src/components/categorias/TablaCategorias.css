@@ -1,9 +1,22 @@
+/* src/components/categorias/TablaCategorias.css */
 .custom-table {
-  border: 2px solid #343a40 !important; /* borde más grueso y oscuro */
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(20, 40, 60, 0.06);
 }
 
-.custom-table th,
-.custom-table td {
-  border: 1px solid #6c757d !important; /* bordes internos */
-  vertical-align: middle; /* centra el texto verticalmente */
+.custom-table thead th {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.custom-table tbody td {
+  vertical-align: middle;
+}
+
+h3.text-center {
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #222;
 }
