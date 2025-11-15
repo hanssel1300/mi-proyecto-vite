@@ -1,4 +1,3 @@
-// src/views/Categorias.jsx
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { db } from "../firebaseconfig";
@@ -14,31 +13,30 @@ import TablaCategorias from "../components/categorias/TablaCategorias";
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria";
 import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
 import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
+import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 
 const Categorias = () => {
-  // Estados para listado y manejo general
   const [categorias, setCategorias] = useState([]);
+  const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Estados para registro de categoría
+  const [textoBusqueda, setTextoBusqueda] = useState("");
+
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nuevaCategoria, setNuevaCategoria] = useState({
     nombre: "",
     descripcion: "",
   });
 
-  // Estados para eliminación de categoría
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
   const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
 
-  // Estados para edición de categoría
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
   const [categoriaEditada, setCategoriaEditada] = useState(null);
 
   const categoriasCollection = collection(db, "categorias");
 
-  // Carga las categorías desde Firestore
   const cargarCategorias = async () => {
     setLoading(true);
     setError(null);
@@ -49,9 +47,11 @@ const Categorias = () => {
         ...doc.data(),
       }));
       setCategorias(datosCategorias);
+      setCategoriasFiltradas(datosCategorias);
     } catch (err) {
       setError(err);
       setCategorias([]);
+      setCategoriasFiltradas([]);
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,18 @@ const Categorias = () => {
     cargarCategorias();
   }, []);
 
-  // Registro: manejo de inputs para nueva categoría
+  const manejarCambioBusqueda = (e) => {
+    const texto = e.target.value.toLowerCase();
+    setTextoBusqueda(texto);
+
+    const filtradas = categorias.filter(
+      (categoria) =>
+        categoria.nombre.toLowerCase().includes(texto) ||
+        categoria.descripcion.toLowerCase().includes(texto)
+    );
+    setCategoriasFiltradas(filtradas);
+  };
+
   const manejoCambioInput = (e) => {
     const { name, value } = e.target;
     setNuevaCategoria((prev) => ({
@@ -70,7 +81,6 @@ const Categorias = () => {
     }));
   };
 
-  // Registro: agregar categoría nueva
   const agregarCategoria = async () => {
     if (!nuevaCategoria.nombre || !nuevaCategoria.descripcion) {
       alert("Por favor, completa todos los campos antes de guardar.");
@@ -88,13 +98,11 @@ const Categorias = () => {
     }
   };
 
-  // Eliminación: abrir modal eliminar con categoría seleccionada
   const manejarEliminar = (categoria) => {
     setCategoriaAEliminar(categoria);
     setMostrarModalEliminar(true);
   };
 
-  // Eliminación: eliminar categoría en Firestore
   const eliminarCategoria = async (id) => {
     try {
       await deleteDoc(doc(db, "categorias", id));
@@ -106,13 +114,11 @@ const Categorias = () => {
     }
   };
 
-  // Edición: abrir modal editar con categoría seleccionada
   const manejarEditar = (categoria) => {
     setCategoriaEditada({ ...categoria });
     setMostrarModalEditar(true);
   };
 
-  // Edición: manejar cambios en inputs del formulario editar
   const manejoCambioInputEditar = (e) => {
     const { name, value } = e.target;
     setCategoriaEditada((prev) => ({
@@ -121,7 +127,6 @@ const Categorias = () => {
     }));
   };
 
-  // Edición: actualizar categoría en Firestore
   const editarCategoria = async () => {
     if (!categoriaEditada?.nombre || !categoriaEditada?.descripcion) {
       alert("Por favor, completa todos los campos antes de actualizar.");
@@ -147,9 +152,8 @@ const Categorias = () => {
     <Container className="mt-4">
       <h3 className="mb-4 text-center">Gestión de Categorías</h3>
 
-      {/* Botón para agregar categoría */}
       <Row>
-        <Col lg={3} md={4} sm={4} xs={6}>
+        <Col lg={3} md={4} sm={4} xs={5}>
           <Button
             className="mb-3"
             style={{ width: "100%" }}
@@ -158,9 +162,14 @@ const Categorias = () => {
             Agregar categoría
           </Button>
         </Col>
+        <Col lg={5} md={8} sm={8} xs={7}>
+          <CuadroBusquedas
+            textoBusqueda={textoBusqueda}
+            manejarCambioBusqueda={manejarCambioBusqueda}
+          />
+        </Col>
       </Row>
 
-      {/* Modal para registro */}
       <ModalRegistroCategoria
         mostrarModal={mostrarModal}
         setMostrarModal={setMostrarModal}
@@ -168,16 +177,12 @@ const Categorias = () => {
         manejoCambioInput={manejoCambioInput}
         agregarCategoria={agregarCategoria}
       />
-
-      {/* Modal para eliminación */}
       <ModalEliminacionCategoria
         mostrarModalEliminar={mostrarModalEliminar}
         setMostrarModalEliminar={setMostrarModalEliminar}
         categoriaAEliminar={categoriaAEliminar}
         eliminarCategoria={eliminarCategoria}
       />
-
-      {/* Modal para edición */}
       <ModalEdicionCategoria
         mostrarModalEditar={mostrarModalEditar}
         setMostrarModalEditar={setMostrarModalEditar}
@@ -186,9 +191,8 @@ const Categorias = () => {
         editarCategoria={editarCategoria}
       />
 
-      {/* Tabla con botones editar y eliminar */}
       <TablaCategorias
-        categorias={categorias}
+        categorias={categoriasFiltradas}
         manejarEliminar={manejarEliminar}
         manejarEditar={manejarEditar}
         loading={loading}
@@ -200,6 +204,8 @@ const Categorias = () => {
 };
 
 export default Categorias;
+
+
 
 
 
