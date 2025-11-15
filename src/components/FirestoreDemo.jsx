@@ -1,6 +1,6 @@
 // src/components/FirestoreDemo.jsx
 import React, { useEffect, useState } from "react";
-import { db } from "../firebaseconfig";
+import { db } from "../database/firebaseconfig";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 
 const FirestoreDemo = () => {
