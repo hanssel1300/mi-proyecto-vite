@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Home from "./views/Home";
 import Categorias from "./views/Categorias";
-import Productos from "./views/productos";
+import Productos from "./views/Productos";
 import "./App.css";
 
 const App = () => {
