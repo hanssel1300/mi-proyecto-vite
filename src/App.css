@@ -4,3 +4,19 @@
   margin: 20px 0;
   font-family: "Segoe UI", sans-serif;
 }
+/* NAVBAR LINKS */
+.nav-link {
+  color: #ddd !important;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.nav-link:hover {
+  color: #f0b400 !important; /* Dorado */
+  transform: translateY(-2px);
+}
+
+.navbar-brand {
+  font-size: 1.3rem !important;
+  letter-spacing: 0.5px;
+}
